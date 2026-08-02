@@ -69,6 +69,9 @@ You will need one the following supported boards:
   to have a more practical form factor.
 - [Makerdiary nRF52840-MDK USB dongle](https://wiki.makerdiary.com/nrf52840-mdk/).
 - [Feitian OpenSK dongle](https://feitiantech.github.io/OpenSK_USB/).
+- [nice!nano and compatible boards](docs/boards/nrf52840_nicenano.md). Unlike the
+  other boards, it has no dedicated user-presence button, so you need to wire
+  one yourself; see the linked page for details.
 
 ## Installation
 
@@ -80,6 +83,41 @@ To test whether the installation was successful, visit a
 Please check our [Troubleshooting and Debugging](docs/debugging.md) section if you
 have problems with the installation process or during development. To find out what
 else you can do with your OpenSK, see [Customization](docs/customization.md).
+
+### Flashing
+
+1. Get a working Rust/C toolchain, then run `./setup.sh` once to fetch
+   submodules and generate the development PKI (`crypto_data/`).
+
+   On NixOS, or anywhere without `rustup`/a system C compiler, use the
+   provided [`flake.nix`](flake.nix) instead: run everything in this section
+   inside `nix develop`, and replace `./setup.sh` with:
+
+   ```sh
+   git submodule update --init
+   source tools/gen_key_materials.sh && generate_pki N && generate_new_batch
+   ```
+
+   (`setup.sh` itself calls `rustup install stable` and other steps that
+   assume `rustup`, which the flake's toolchain does not provide.)
+2. Put the board in its flashing mode if it needs one (e.g. DFU mode on the
+   Nordic Dongle, or the UF2 bootloader on nice!nano — see the board-specific
+   page linked above for the exact steps).
+3. Flash with:
+
+   ```sh
+   ./flash.sh <target>
+   ```
+
+   where `<target>` is one of `host`, `opentitan`, `nrf52840dk`,
+   `nrf52840_dongle`, `nrf52840_mdk`, `nrf52840_nicenano`. See
+   `./flash.sh --help` for options (e.g. `--features` to change the enabled
+   applet features, or `--update` to update in place and preserve storage
+   instead of a full flash).
+
+See [Installation](docs/install.md) for the full walkthrough and
+[docs/boards/](docs/boards/) for per-board notes (buttons, LEDs, DFU/UF2
+entry steps).
 
 ## Research
 

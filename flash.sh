@@ -30,6 +30,7 @@ usage() {
   echo "  nrf52840dk         Nordic nRF52840 Development Kit"
   echo "  nrf52840_dongle    Nordic nRF52840 Dongle"
   echo "  nrf52840_mdk       Makerdiary nRF52840 MDK USB Dongle"
+  echo "  nrf52840_nicenano  nice!nano and compatible nRF52840 boards"
   exit 1
 }
 
@@ -121,6 +122,12 @@ case $TARGET in
     fi
     cargo xtask --release --native applet rust ../.. --opt-level=z --features="$MDK_FEATURES" \
       runner nordic --board=makerdiary --opt-level=z --features=usb-ctap \
+        --features="$SOFTWARE_CRYPTO_FEATURES" \
+      "${CMD[@]}"
+    ;;
+  nrf52840_nicenano)
+    cargo xtask --release --native applet rust ../.. --opt-level=z --features="$FEATURES" \
+      runner nordic --board=nicenano --opt-level=z --features=usb-ctap \
         --features="$SOFTWARE_CRYPTO_FEATURES" \
       "${CMD[@]}"
     ;;
